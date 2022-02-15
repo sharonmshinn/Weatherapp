@@ -7,4 +7,10 @@
     <string name="humidity">Humidity 100%</string>
     <string name="pressure">Pressure 1023 hPa</string>
     <string name="feels_like">Feels like 78°</string>
+    <string name="forecast">Forecast</string>
+    <string name="sunrise">Sunrise: %1$s</string>
+    <string name="sunset">Sunset: %1$s</string>
+    <string name="temp_2">Temp: %1$s°</string>
+    <string name="high_2">High: %1$s°</string>
+    <string name="low_2">Low: %1$s°</string>
 </resources>

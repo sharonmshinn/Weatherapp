@@ -4,6 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/sharo/AndroidStudioProjects/Weatherapp/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/Users/sharo/AndroidStudioProjects/Weatherapp/app/src/main/res/layout/activity_second.xml" value="0.1609375" />
+        <entry key="..\:/Users/sharo/AndroidStudioProjects/Weatherapp/app/src/main/res/layout/activity_second2.xml" value="0.190625" />
+        <entry key="..\:/Users/sharo/AndroidStudioProjects/Weatherapp/app/src/main/res/layout/row_date.xml" value="0.536" />
       </map>
     </option>
   </component>
