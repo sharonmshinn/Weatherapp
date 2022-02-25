@@ -1,15 +1,24 @@
 package com.example.weatherapp
 
-import android.telecom.Call
+
+import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface Api : Call<CurrentConditions{
+interface Api {
     @GET("weather")
     fun getCurrentConditions(
         @Query("zip") zip: String,
-        @Query("units") unites: String = "imperial",
         @Query("appid") appId: String = "5548515cd189dd95ffbb311a74da86ae",
-        ) : Call<CurrentConditions>
+        @Query("units") units: String = "imperial",
+    ) : Call<CurrentConditions>
+
+    @GET("daily")
+    fun getForecast(
+        @Query("zip") zip: String,
+        @Query("appid") appId: String = "5548515cd189dd95ffbb311a74da86ae",
+        @Query("units") units: String = "imperial",
+        @Query("cnt") count: String = "16",
+    ) : Call<Forecast>
 
 }

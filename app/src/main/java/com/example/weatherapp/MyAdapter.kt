@@ -2,11 +2,14 @@ package com.example.weatherapp
 
 
 import android.annotation.SuppressLint
+import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -32,10 +35,12 @@ class MyAdapter(private val data: List<DayForecast>) : RecyclerView.Adapter<MyAd
 
         private val highView: TextView = view.findViewById(R.id.high_day)
 
+        private val iconView: ImageView = view.findViewById(R.id.weather_icon)
+
 
         @SuppressLint("StringFormatMatches")
         fun bind(data: DayForecast) {
-            val instant = Instant.ofEpochSecond(data.date)
+            val instant = Instant.ofEpochSecond(data.dt)
             val dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
             dateView.text = formatter.format(dateTime)
 
@@ -46,7 +51,7 @@ class MyAdapter(private val data: List<DayForecast>) : RecyclerView.Adapter<MyAd
 
             val instant3 = Instant.ofEpochSecond(data.sunset)
             val sunsetTime = LocalDateTime.ofInstant(instant3, ZoneId.systemDefault())
-            sunsetView.text = itemView.context.getString(R.string.sunset, formatter3.format(sunriseTime))
+            sunsetView.text = itemView.context.getString(R.string.sunset, formatter3.format(sunsetTime))
 
 
             tempView.text = itemView.context.getString(R.string.temp_2, data.temp.day.toInt())
@@ -54,6 +59,12 @@ class MyAdapter(private val data: List<DayForecast>) : RecyclerView.Adapter<MyAd
             lowView.text = itemView.context.getString(R.string.high_2, data.temp.max.toInt())
 
             highView.text = itemView.context.getString(R.string.low_2, data.temp.min.toInt())
+
+            val iconName = data.weather.firstOrNull()?.icon
+            val iconURL = "https://openweathermap.org/img/wn/${iconName}@2x.png"
+            Glide.with(iconView)
+                .load(iconURL)
+                .into(iconView)
         }
 
 
