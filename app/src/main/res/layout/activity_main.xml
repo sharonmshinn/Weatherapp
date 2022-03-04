@@ -97,8 +97,8 @@
 
     <ImageView
         android:id="@+id/condition_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="131dp"
+        android:layout_height="131dp"
         android:src="@drawable/sun"
         app:layout_constraintStart_toStartOf="@id/temp"
         app:layout_constraintStart_toEndOf="@id/temp"
