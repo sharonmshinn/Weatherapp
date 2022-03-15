@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_nav"
+    app:startDestination="@id/searchFragmentNav">
+
+    <fragment
+        android:id="@+id/searchFragmentNav"
+        android:name="com.example.weatherapp.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_currentConditionsFragment"
+            app:destination="@id/currentConditionsFragmentNav" />
+    </fragment>
+    <fragment
+        android:id="@+id/currentConditionsFragmentNav"
+        android:name="com.example.weatherapp.CurrentConditionsFragment"
+        android:label="fragment_current_conditions"
+        tools:layout="@layout/fragment_current_conditions" >
+        <action
+            android:id="@+id/action_currentConditionsFragment_to_forecastFragment"
+            app:destination="@id/forecastFragmentNav" />
+        <argument
+            android:name="zipArgs"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="currentArgs"
+            app:argType="com.example.weatherapp.CurrentConditions"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/forecastFragmentNav"
+        android:name="com.example.weatherapp.ForecastFragment"
+        android:label="ForecastFragment" >
+        <action
+            android:id="@+id/action_forecastFragment_to_currentConditionsFragment"
+            app:destination="@id/currentConditionsFragmentNav" />
+        <argument
+            android:name="zip"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+</navigation>

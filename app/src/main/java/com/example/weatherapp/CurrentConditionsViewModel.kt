@@ -14,15 +14,16 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(private val service: Api) : ViewModel() {
+class CurrentConditionsViewModel @Inject constructor(private val service: Api) : ViewModel() {
+
     private val _currentConditions = MutableLiveData<CurrentConditions>()
     val currentConditions: LiveData<CurrentConditions>
         get() = _currentConditions
 
 
-    fun loadData() = runBlocking{
+    fun loadData(currentArgs: CurrentConditions) = runBlocking{
         launch {
-            _currentConditions.value = service.getCurrentConditions("55426")
+            _currentConditions.value = currentArgs
         }
     }
 
