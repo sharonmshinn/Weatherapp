@@ -22,4 +22,21 @@ interface Api {
         @Query("cnt") count: String = "16",
     ) : Forecast
 
+    @GET("weather")
+    suspend fun getCurrentCurrentConditions(
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("appid") appId: String = "5548515cd189dd95ffbb311a74da86ae",
+        @Query("units") units: String = "imperial",
+    ) : CurrentConditions
+
+    @GET("forecast/daily")
+    suspend fun getCurrentForecast(
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("appid") appId: String = "5548515cd189dd95ffbb311a74da86ae",
+        @Query("units") units: String = "imperial",
+        @Query("cnt") count: String = "16",
+    ) : Forecast
+
 }

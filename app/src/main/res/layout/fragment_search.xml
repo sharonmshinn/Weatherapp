@@ -25,7 +25,7 @@
         />
 
     <Button
-        android:id="@id/search_button"
+        android:id="@+id/search_button"
         android:layout_width="185dp"
         android:layout_height="wrap_content"
         android:text="@string/search"
@@ -38,6 +38,19 @@
         app:layout_constraintLeft_toLeftOf="parent"
         />
 
+    <Button
+        android:id="@+id/location_button"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/request"
+        android:layout_marginHorizontal="85dp"
+        android:layout_marginVertical="320dp"
+        android:backgroundTint="@color/silver"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
     <TextView
         android:layout_width="168dp"
         android:layout_height="wrap_content"

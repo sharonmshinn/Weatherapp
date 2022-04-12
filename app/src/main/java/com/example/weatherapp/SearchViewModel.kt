@@ -11,13 +11,17 @@ import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(private val service: Api) : ViewModel() {
 
-    //button not greyed out.
-    //How to call api? How to get zip code string and call api
+
     private var zipCode: String? = null
     private val _zipCodeText = MutableLiveData<String>()
     private val _enableButton = MutableLiveData(false)
     private val _showErrorDialog = MutableLiveData(false)
     private val _currentConditions = MutableLiveData<CurrentConditions>()
+    private var latitude: String? = null
+    private val _latitudeText = MutableLiveData<String>()
+    private var longitude: String? = null
+    private val _longitudeText = MutableLiveData<String>()
+
 
     val currentConditions: LiveData<CurrentConditions>
         get() = _currentConditions
@@ -31,10 +35,26 @@ class SearchViewModel @Inject constructor(private val service: Api) : ViewModel(
     val zipCodeText: LiveData<String>
         get() = _zipCodeText
 
+    val latitudeText: LiveData<String>
+        get() = _latitudeText
+
+    val longitudeText: LiveData<String>
+        get() = _longitudeText
+
     fun updateZipCode(zipCode: String) {
         if(zipCode != this.zipCode)
             this.zipCode = zipCode
             _enableButton.value = isValidZipCode(zipCode)
+    }
+
+    fun updateLat(lat: String) {
+        if(lat != this.latitude)
+            this.latitude = lat
+    }
+
+    fun updateLon(lon: String) {
+        if(lon != this.longitude)
+            this.longitude = lon
     }
 
     private fun isValidZipCode(zipCode: String) : Boolean {
@@ -51,8 +71,24 @@ class SearchViewModel @Inject constructor(private val service: Api) : ViewModel(
         }
     }
 
+    fun submitCurrentButtonClicked() = runBlocking{
+        try {
+            _currentConditions.value = service.getCurrentCurrentConditions(returnLat().toString(), returnLon().toString())
+        } catch(e : HttpException) {
+            _showErrorDialog.value = true
+        }
+    }
+
     fun returnZipCode() : String? {
         return zipCode
+    }
+
+    fun returnLat() : String? {
+        return latitude
+    }
+
+    fun returnLon() : String? {
+        return longitude
     }
 
     fun resetErrorDialog() {

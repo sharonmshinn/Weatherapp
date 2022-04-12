@@ -40,9 +40,15 @@ class CurrentConditionsFragment : Fragment() {
 
         (activity as AppCompatActivity).supportActionBar?.title = "Current Conditions"
 
+        //how to special case for zip or latLong for same button?
         binding.button.setOnClickListener {
-            val zip = CurrentConditionsFragmentDirections.actionCurrentConditionsFragmentToForecastFragment(args.zipArgs)
-            Navigation.findNavController(it).navigate(zip)
+            val zip = CurrentConditionsFragmentDirections.actionCurrentConditionsFragmentToForecastFragment(args.zipArgs, null, null)
+            val latLong = CurrentConditionsFragmentDirections.actionCurrentConditionsFragmentToForecastFragment(null, args.latArgs, args.longArgs)
+            if(args.zipArgs != null) {
+                Navigation.findNavController(it).navigate(zip)
+            } else {
+                Navigation.findNavController(it).navigate(latLong)
+            }
 
         }
     }
@@ -53,6 +59,7 @@ class CurrentConditionsFragment : Fragment() {
             bindData(currentConditions)
         }
         viewModel.loadData(args.currentArgs!!)
+
     }
 
     private fun bindData(currentConditions: CurrentConditions){

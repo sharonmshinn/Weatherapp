@@ -30,6 +30,14 @@
             android:name="currentArgs"
             app:argType="com.example.weatherapp.CurrentConditions"
             app:nullable="true" />
+        <argument
+            android:name="latArgs"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="longArgs"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/forecastFragmentNav"
@@ -40,6 +48,14 @@
             app:destination="@id/currentConditionsFragmentNav" />
         <argument
             android:name="zip"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="latArgs"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="longArgs"
             app:argType="string"
             app:nullable="true" />
     </fragment>
