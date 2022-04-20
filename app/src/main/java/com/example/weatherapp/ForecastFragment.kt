@@ -45,6 +45,12 @@ class ForecastFragment : Fragment() {
         viewModel.forecast.observe(this) { forecast ->
             binding.recyclerView.adapter = MyAdapter(forecast.list)
         }
-        viewModel.loadData(args.zip)
+        //Is this correct?
+        if(args.zip != null) {
+            viewModel.loadData(args.zip)
+        } else {
+            viewModel.loadLocationData(args.latArgs, args.longArgs)
+        }
+
     }
 }

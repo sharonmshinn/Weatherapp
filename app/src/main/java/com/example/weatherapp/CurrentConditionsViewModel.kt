@@ -27,4 +27,5 @@ class CurrentConditionsViewModel @Inject constructor(private val service: Api) :
         }
     }
 
+
 }
