@@ -18,6 +18,8 @@
     <string name="ok">OK</string>
     <string name="request">Request Current Location</string>
     <string name="enter_zip">Enter a zip code</string>
+    <string name="notification_on">Enable Notifications</string>
+    <string name="notification_off">Disable Notifications</string>
     <string name="location_permission_rationale">This app uses your approximate current location to find weather for your location.</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

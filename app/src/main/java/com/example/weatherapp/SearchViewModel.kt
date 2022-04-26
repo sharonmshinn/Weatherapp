@@ -21,6 +21,7 @@ class SearchViewModel @Inject constructor(private val service: Api) : ViewModel(
     private val _latitudeText = MutableLiveData<String>()
     private var longitude: String? = null
     private val _longitudeText = MutableLiveData<String>()
+    private val _enableNotificationButton = MutableLiveData(false)
 
 
     val currentConditions: LiveData<CurrentConditions>
@@ -31,6 +32,10 @@ class SearchViewModel @Inject constructor(private val service: Api) : ViewModel(
 
     val enableButton: LiveData<Boolean>
         get() = _enableButton
+
+    val enableNotificationButton: LiveData<Boolean>
+        get() = _enableNotificationButton
+
 
     val zipCodeText: LiveData<String>
         get() = _zipCodeText
@@ -79,6 +84,23 @@ class SearchViewModel @Inject constructor(private val service: Api) : ViewModel(
         }
     }
 
+    fun submitNotificationButtonClicked() = runBlocking{
+        if(_enableNotificationButton.value == false) {
+            try {
+                _currentConditions.value = service.getCurrentCurrentConditions(
+                    returnLat().toString(),
+                    returnLon().toString()
+                )
+            } catch (e: HttpException) {
+                _showErrorDialog.value = true
+            }
+
+            _enableNotificationButton.value = true
+        } else {
+            resetNotificationButton()
+        }
+    }
+
     fun returnZipCode() : String? {
         return zipCode
     }
@@ -94,4 +116,9 @@ class SearchViewModel @Inject constructor(private val service: Api) : ViewModel(
     fun resetErrorDialog() {
         _showErrorDialog.value = false
     }
+    fun resetNotificationButton() {
+        _enableNotificationButton.value = false
+    }
+
+
 }
