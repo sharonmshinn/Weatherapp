@@ -1,9 +1,14 @@
 package com.example.weatherapp
 
 import android.Manifest
-import android.app.AlertDialog
+import android.app.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.text.Editable
@@ -15,6 +20,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.Debug.getLocation
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import com.example.weatherapp.databinding.FragmentSearchBinding
@@ -30,6 +37,12 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
     private val REQUEST_LOCATION_PERMISSION = 300
+    private val CHANNEL_ID = "channel_id_example_01"
+    private val notificationId = 101
+    private lateinit var serviceIntent: Intent
+    private var time = 0.0
+    private var timerStarted = false
+
     @Inject
     lateinit var viewModel: SearchViewModel
 
@@ -50,6 +63,9 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
         (activity as AppCompatActivity).supportActionBar?.title = "Search"
 
         binding = FragmentSearchBinding.bind(view)
+
+        serviceIntent = Intent(activity?.applicationContext, TimerService::class.java)
+        activity?.registerReceiver(updateNotification, IntentFilter(TimerService.TIMER_UPDATED))
 
 
         viewModel.enableButton.observe(viewLifecycleOwner) { enable ->
@@ -136,6 +152,90 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
                 requestLocationPermission()
             }
         }
+
+        binding.notificationButton.setOnClickListener() {
+            getLastLocation()
+            createNotificationChannel()
+            if(viewModel.enableNotificationButton.value == false) {
+                if (ContextCompat.checkSelfPermission(
+                        (activity as AppCompatActivity), Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    /*
+                    //This line to line 164 can be commented out and switched for
+                        //lines 169 to 171 to see notifications even with failed api call
+                    viewModel.submitNotificationButtonClicked()
+                    if (!(viewModel.showErrorDialog.value!!)) {
+                        sendNotification()
+                        binding.notificationButton.setText(R.string.notification_off)
+                    } else {
+                        viewModel.resetErrorDialog()
+                    }
+                     */
+                    //This code will allow for the notification to show even if we can't
+                    //get the zip code, but info will be null
+                    viewModel.submitNotificationButtonClicked()
+                    sendNotification()
+                    startStopTimer()
+                    serviceIntent.putExtra(TimerService.ELAPSED_TIME, 0)
+                    requireActivity().startService(serviceIntent)
+                    binding.notificationButton.setText(R.string.notification_off)
+
+                } else {
+                    requestLocationPermission()
+                }
+            } else {
+                createNotificationChannel()?.cancelAll()
+                viewModel.resetNotificationButton()
+                startStopTimer()
+                binding.notificationButton.setText(R.string.notification_on)
+            }
+        }
+    }
+
+
+    private fun createNotificationChannel(): NotificationManager? {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Notification Title"
+            val descriptionText = "Notification Description"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID,name,importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as
+                    NotificationManager
+            notificationManager.createNotificationChannel(channel)
+            return notificationManager
+        }
+        return null
+    }
+
+
+    private fun sendNotification() {
+        val intent = Intent(activity as AppCompatActivity, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+            activity as AppCompatActivity,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE)
+
+
+        val builder = NotificationCompat.Builder(activity as AppCompatActivity, CHANNEL_ID)
+            //.setSmallIcon(viewModel.currentConditions.value!!.weather.first().icon?.toInt())
+            .setSmallIcon(R.drawable.sun)
+            .setContentTitle("Current weather for " + viewModel.currentConditions.value?.name.toString())
+            .setContentText(viewModel.currentConditions.value?.main?.temp.toString())
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+
+        with(NotificationManagerCompat.from(activity as AppCompatActivity)) {
+            notify(notificationId, builder.build())
+        }
     }
 
     private fun getLastLocation() {
@@ -143,6 +243,8 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
         locationRequest.interval = 0L
         locationRequest.fastestInterval = 0L
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        //Is this what you intended for us to do instead of using a timer? Wasn't sure.
+        locationRequest.setInterval(180000*1000)
 
         if(ContextCompat.checkSelfPermission(
                 (activity as AppCompatActivity),
@@ -169,6 +271,43 @@ class SearchFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCall
         )
     }
  */
+
+    private val updateNotification: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            getLocation()
+            var builder = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+                .setSmallIcon(R.drawable.sun)
+                .setContentTitle("Current weather for " + viewModel.currentConditions.value?.name.toString())
+                .setContentText(viewModel.currentConditions.value?.main?.temp.toString())
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+            with(NotificationManagerCompat.from(requireContext())) {
+                notify(1, builder.build())
+            }
+        }
+    }
+
+
+
+    fun startStopTimer() {
+        if(timerStarted == false) {
+            resetTimer()
+        } else {
+            startTimer()
+            timerStarted = true
+        }
+    }
+
+    private fun startTimer() {
+        serviceIntent.putExtra(TimerService.ELAPSED_TIME, time)
+        activity?.startService(serviceIntent)
+
+    }
+
+    fun resetTimer() {
+        time = 0.0
+        timerStarted = false
+    }
 
     private fun requestLocationPermission() {
         if(ActivityCompat.shouldShowRequestPermissionRationale
